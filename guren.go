@@ -25,7 +25,7 @@ func (g *Guren) Use(m Middleware) *Guren {
 
 // Listen start server at given port
 func (g *Guren) Listen(addr string) {
-	err := http.ListenAndServe(addr, g.middlewares.compose())
+	err := http.ListenAndServe(addr, g.middlewares)
 	if err != nil {
 		panic(err)
 	}

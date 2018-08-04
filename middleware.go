@@ -14,12 +14,10 @@ func (ms *Middlewares) add(mw Middleware) {
 	*ms = append(*ms, mw)
 }
 
-func (ms Middlewares) compose() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := &Context{w, r}
-		if err := ms[0](ctx, ms.dispatch(ctx, 1)); err != nil {
-			panic(err)
-		}
+func (ms Middlewares) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := &Context{w, r}
+	if err := ms[0](ctx, ms.dispatch(ctx, 1)); err != nil {
+		panic(err)
 	}
 }
 
