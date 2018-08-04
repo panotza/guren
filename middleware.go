@@ -1,7 +1,6 @@
 package guren
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -16,7 +15,6 @@ func (ms *Middlewares) add(mw Middleware) {
 }
 
 func (ms Middlewares) compose() http.HandlerFunc {
-	log.Println("compose")
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := &Context{w, r}
 		ms[0](ctx, ms.dispatch(ctx, 1))
