@@ -5,7 +5,7 @@ import (
 )
 
 // Middleware is guren middleware
-type Middleware func(ctx *Context, next func())
+type Middleware func(ctx *Context, next func()) error
 
 // Middlewares is slice of middleware
 type Middlewares []Middleware
@@ -17,7 +17,9 @@ func (ms *Middlewares) add(mw Middleware) {
 func (ms Middlewares) compose() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := &Context{w, r}
-		ms[0](ctx, ms.dispatch(ctx, 1))
+		if err := ms[0](ctx, ms.dispatch(ctx, 1)); err != nil {
+			panic(err)
+		}
 	}
 }
 
@@ -26,6 +28,8 @@ func (ms Middlewares) dispatch(ctx *Context, i int) func() {
 		return func() {}
 	}
 	return func() {
-		ms[i](ctx, ms.dispatch(ctx, i+1))
+		if err := ms[i](ctx, ms.dispatch(ctx, i+1)); err != nil {
+			panic(err)
+		}
 	}
 }
