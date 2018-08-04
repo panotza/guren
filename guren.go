@@ -7,8 +7,8 @@ import (
 type (
 	// Guren is the top-level framework instance.
 	Guren struct {
-		server      *http.Server
-		middlewares Middlewares
+		server *http.Server
+		ms     Middleware
 	}
 )
 
@@ -19,13 +19,17 @@ func New() *Guren {
 
 // Use uses the given middleware
 func (g *Guren) Use(m Middleware) *Guren {
-	g.middlewares.add(m)
+	if g.ms == nil {
+		g.ms = m
+	} else {
+		g.ms = g.ms.add(m)
+	}
 	return g
 }
 
 // Listen start server at given port
 func (g *Guren) Listen(addr string) {
-	err := http.ListenAndServe(addr, g.middlewares)
+	err := http.ListenAndServe(addr, g.ms)
 	if err != nil {
 		panic(err)
 	}
